@@ -62,7 +62,7 @@ class LoginSerializer(serializers.Serializer):
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
-        # "user" 필드 때문에 __all__ 못씀ㅠ
+        # "user" 필드 때문에 __all__ 못씀
         fields = ("nickname", "image", "age", "gender", "mbti", "restaurant_korea", "restaurant_west", \
                 "restaurant_china", "restaurant_japan", "restaurant_fast", "restaurant_bunsik", "cafe_cafe", \
                 "cafe_dessert", "cafe_bakery", "leisure_gallery", "leisure_craft", "leisure_popup", \

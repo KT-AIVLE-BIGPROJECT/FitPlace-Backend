@@ -9,12 +9,45 @@ from django.dispatch import receiver
 # [Profile 모델]
 # nickname, image, age, gender, mbti, keyword(취향)
 class Profile(models.Model):
+    AGE_RANGE = [
+        ('age_10', '10대'), # (db에 저장되는 값, admin이나 폼에서 표시하는 값)
+        ('age_20', '20대'),
+        ('age_30', '30대'),
+        ('age_40', '40대'),
+        ('age_50', '50대'),
+        ('age_60', '60대'),
+        ('age_none', '선택안함'),
+    ]
+    GENDER_RANGE = [
+        ('male', '남성'),
+        ('female', '여성'),
+        ('gender_none', '선택안함'),
+    ]
+    MBTI_RANGE = [
+        ('mbti_istj', 'ISTJ'),
+        ('mbti_istp', 'ISTP'),
+        ('mbti_isfj', 'ISFJ'),
+        ('mbti_isfp', 'ISFP'),
+        ('mbti_intj', 'INTJ'),
+        ('mbti_intp', 'INTP'),
+        ('mbti_infj', 'INFJ'),
+        ('mbti_infp', 'INFP'),
+        ('mbti_estj', 'ESTJ'),
+        ('mbti_estp', 'ESTP'),
+        ('mbti_esfj', 'ESFJ'),
+        ('mbti_esfp', 'ESFP'),
+        ('mbti_entj', 'ENTJ'),
+        ('mbti_entp', 'ENTP'),
+        ('mbti_enfj', 'ENFJ'),
+        ('mbti_enfp', 'ENFP'),
+        ('mbti_none', '선택안함'),
+    ]
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
     nickname = models.CharField(max_length=50)
     image = models.ImageField(upload_to='profile/', default='default.png')
-    age = models.CharField(max_length=30, default="none")
-    gender = models.CharField(max_length=30, default="none")
-    mbti = models.CharField(max_length=30, default="none")
+    age = models.CharField(max_length=30, choices=AGE_RANGE, default="age_none")
+    gender = models.CharField(max_length=30, choices=GENDER_RANGE, default="gender_none")
+    mbti = models.CharField(max_length=30, choices=MBTI_RANGE, default="mbti_none")
     
     # 취향 설정 여부
     restaurant_korea = models.BooleanField(default=False)
