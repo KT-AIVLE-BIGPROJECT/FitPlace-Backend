@@ -15,6 +15,8 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.conf.urls import url
+from places import views
 
 from django.conf import settings
 from django.conf.urls.static import static
@@ -22,5 +24,7 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('users/', include('users.urls')),
-    path('', include('posts.urls')), # posts.urls에 router로 이미 posts/경로 설정이 되어 있어서 여기에는 posts/ 적어주지 않음
+    path('', include('posts.urls')),# posts.urls에 router로 이미 posts/경로 설정이 되어 있어서 여기에는 posts/ 적어주지 않음
+    url('places/', views.PlacesViewSet.as_view()),
+    url('congestion/', views.CongestionViewSet.as_view()),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
