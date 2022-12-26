@@ -6,11 +6,22 @@ from rest_framework.response import Response
 from .models import *
 from datetime import timedelta, datetime
 from .serializers import *
+import random
 
 
 class PlacesViewSet(APIView):
     def get(self, request, format=None):
         queryset = Places.objects.all()
+        serializer = PlacesSerializer(queryset, many=True)
+        print(len(queryset))
+        return Response(serializer.data)
+
+
+class PlacesTop100ViewSet(APIView):
+    def get(self, request, format=None):
+        places = list(Places.objects.order_by('-review_blog_count','-review_count')[:100])
+        queryset = random.sample(places,7)
+        print(queryset)
         serializer = PlacesSerializer(queryset, many=True)
         print(len(queryset))
         return Response(serializer.data)

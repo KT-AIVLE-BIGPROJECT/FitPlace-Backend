@@ -24,7 +24,7 @@ def insertPlace():
                                       place_year10=row[6], place_year20=row[7], place_year30=row[8],
                                       place_year40=row[9], place_year50=row[10], place_year60=row[11],
                                       place_male=row[12], place_female=row[13], place_region=row[15],place_photo=row[19],
-                                      review_blog_count=row[20],review_count=row[21],
+                                      review_count=row[20],review_blog_count=row[21],
                                       review_summary1=row[22], review_summary_cnt1=float(row[23]),
                                       review_summary2=row[24], review_summary_cnt2=float(row[25]),
                                       review_summary3=row[26], review_summary_cnt3=float(row[27]),
