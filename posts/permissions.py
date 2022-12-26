@@ -1,7 +1,8 @@
 from rest_framework import permissions
 
 class CustomReadOnly(permissions.BasePermission):
-    ## 글 조회는 누구나 가능 / 글 작성은 로그인한 유저만 / 글 수정은 작성자만
+    ## 게시글 ==> 조회는 누구나 가능 / 작성은 로그인한 유저만 / 수정은 작성자만
+    ## 댓글도 동일
     
     # 전체 객체에 대한 권한
     def has_permission(self, request, view):
