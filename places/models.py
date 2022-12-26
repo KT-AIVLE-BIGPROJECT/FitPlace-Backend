@@ -50,7 +50,7 @@ class Places(models.Model):
     review9 = models.TextField()
     review10 = models.TextField()
     review_blog_count = models.IntegerField()
-    review_count = models.IntegerField()
+    review_count = models.IntegerField() ###### review_visitor_count 로 바꾸기
     review_keywords = models.TextField(blank=True, null=True)
 
     def __str__(self):
