@@ -8,6 +8,9 @@ from .models import *
 from datetime import timedelta, datetime
 from .serializers import *
 import random
+import json
+import pandas as pd
+from sklearn.metrics.pairwise import cosine_similarity
 
 # # [ 전체 장소 불러오기 + 카테고리 지정 ]
 # class PlaceViewSet(APIView):
@@ -31,9 +34,46 @@ class PlaceTop100ViewSet(APIView):
         print(len(queryset))
         return Response(serializer.data)
 
-# class RecommendationAPI(APIView):
-#     def post(self, request):
-#         serializers = 
+# [ 사용자 별 맞춤 장소 불러오기 ]
+# - 중분류 카테고리별, 지역구별 필터링
+# - 평점순, 리뷰순 정렬
+def RecommendationAPI(APIView):
+    def post(self, request):
+        # 사용자 입력정보 데이터 받아오기
+        print("aaaaa")
+        userform = json.loads(request.body)
+        print(f"사용자 특성,취향 파라미터{userform}")
+        # 장소 추천 파라미터 데이터 받아오기
+        recParams = RecParam.objects.all()
+        recParams_df = pd.DataFrame.from_records(recParams.values())
+        recParams_df = recParams_df.drop(columns=['id'])
+        # 장소 데이터 받아오기
+        places = Place.objects.all()
+        places_df = pd.DataFrame.from_records(places.values())
+        
+        # 사용자 입력 정보 - 장소 데이터 간의 코사인 유사도 구하기
+        recommend_places = pd.DataFrame(cosine_similarity(
+            userform,
+            recParams_df.loc[ : , recParams_df.columns != 'place_code' ]),
+            columns = list(recParams_df.place_code), index=['similarity']
+        )
+        
+        # 유사도 순서대로 정렬
+        topN = recommend_places.T.sort_values('similarity', ascending=False)
+        topN_df = pd.DataFrame({
+            'place_code': list(topN.index)
+        })
+        # 장소id로 장소 데이터와 INNER JOIN ==> 최종 추천 장소 목록
+        final_recommends = pd.merge(topN_df, places_df, how='left', on='place_code')
+        print("유사도 순으로 추천된 장소들입니다.")
+        print(final_recommends)
+        
+        final_recommends.to_records()
+        
+        # serializer = RecParamSerializer(queryset, many=True)
+        return Respon
+        
+            
 
 
 class CongestionViewSet(APIView):

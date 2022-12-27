@@ -7,7 +7,11 @@ class PlaceSerializer(serializers.ModelSerializer):
         model = Place
         fields = '__all__'
 
-
+class RecParamSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = RecParam
+        fields = '__all__'
+        
 class CongestionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Congestion

@@ -14,7 +14,7 @@ class Congestion(models.Model):
         return self.area_nm
 
 class Place(models.Model):
-    place_code = models.CharField(max_length=50)
+    place_code = models.IntegerField()
     name = models.CharField(max_length=200)
     photo = models.TextField()
     search_region = models.CharField(max_length=50)
@@ -61,7 +61,7 @@ class Place(models.Model):
         return self.name
     
 class RecParam(models.Model):
-    place_code = models.CharField(max_length=50)
+    place_code = models.IntegerField()
     age_10 = models.FloatField(validators=[MinValueValidator(0), MaxValueValidator(1)], blank=True, null=True)
     age_20 = models.FloatField(validators=[MinValueValidator(0), MaxValueValidator(1)], blank=True, null=True)
     age_30 = models.FloatField(validators=[MinValueValidator(0), MaxValueValidator(1)], blank=True, null=True)
@@ -74,24 +74,25 @@ class RecParam(models.Model):
     mbti_in = models.FloatField(validators=[MinValueValidator(0), MaxValueValidator(1)], blank=True, null=True)
     mbti_es = models.FloatField(validators=[MinValueValidator(0), MaxValueValidator(1)], blank=True, null=True)
     mbti_en = models.FloatField(validators=[MinValueValidator(0), MaxValueValidator(1)], blank=True, null=True)
-    restaurant_korea = models.BooleanField(default=False)
-    restaurant_west = models.BooleanField(default=False)
-    restaurant_china = models.BooleanField(default=False)
-    restaurant_japan = models.BooleanField(default=False)
-    restaurant_fast = models.BooleanField(default=False)
-    restaurant_bunsik = models.BooleanField(default=False)
-    cafe_cafe = models.BooleanField(default=False)
-    cafe_dessert = models.BooleanField(default=False)
-    cafe_bakery = models.BooleanField(default=False)
-    leisure_gallery = models.BooleanField(default=False)
-    leisure_craft = models.BooleanField(default=False)
-    leisure_popup = models.BooleanField(default=False)
-    leisure_theater = models.BooleanField(default=False)
-    leisure_book = models.BooleanField(default=False)
-    leisure_department = models.BooleanField(default=False)
-    walking_park = models.BooleanField(default=False)
-    walking_market = models.BooleanField(default=False)
-    walking_street = models.BooleanField(default=False)
+    
+    restaurant_korea = models.FloatField(default=0)
+    restaurant_west = models.FloatField(default=0)
+    restaurant_china = models.FloatField(default=0)
+    restaurant_japan = models.FloatField(default=0)
+    restaurant_fast = models.FloatField(default=0)
+    restaurant_bunsik = models.FloatField(default=0)
+    cafe_cafe = models.FloatField(default=0)
+    cafe_dessert = models.FloatField(default=0)
+    cafe_bakery = models.FloatField(default=0)
+    leisure_gallery = models.FloatField(default=0)
+    leisure_craft = models.FloatField(default=0)
+    leisure_popup = models.FloatField(default=0)
+    leisure_theater = models.FloatField(default=0)
+    leisure_book = models.FloatField(default=0)
+    leisure_department = models.FloatField(default=0)
+    walking_park = models.FloatField(default=0)
+    walking_market = models.FloatField(default=0)
+    walking_street = models.FloatField(default=0)
     
     def __str__(self):
         return self.place_code
