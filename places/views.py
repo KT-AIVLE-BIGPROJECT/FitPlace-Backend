@@ -3,6 +3,7 @@ from rest_framework import viewsets, generics
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
+from django.views import View
 
 from .models import *
 from datetime import timedelta, datetime
@@ -37,12 +38,15 @@ class PlaceTop100ViewSet(APIView):
 # [ 사용자 별 맞춤 장소 불러오기 ]
 # - 중분류 카테고리별, 지역구별 필터링
 # - 평점순, 리뷰순 정렬
-def RecommendationAPI(APIView):
+class RecommendationAPI(APIView):
     def post(self, request):
         # 사용자 입력정보 데이터 받아오기
-        print("aaaaa")
         userform = json.loads(request.body)
-        print(f"사용자 특성,취향 파라미터{userform}")
+        userform = pd.DataFrame([userform])
+        print(f"사용자 특성,취향 파라미터")
+        print(userform)
+        #print(userform.columns)
+        # print(type(userform))
         # 장소 추천 파라미터 데이터 받아오기
         recParams = RecParam.objects.all()
         recParams_df = pd.DataFrame.from_records(recParams.values())
@@ -66,12 +70,14 @@ def RecommendationAPI(APIView):
         # 장소id로 장소 데이터와 INNER JOIN ==> 최종 추천 장소 목록
         final_recommends = pd.merge(topN_df, places_df, how='left', on='place_code')
         print("유사도 순으로 추천된 장소들입니다.")
-        print(final_recommends)
+        print(final_recommends) # 상위 30개 정도까진 같은데 그 다음부터는 주피터 노트북이나 장고 쉘하고 결과가 다름;;
+        # print(final_recommends[:200]['search_category'].value_counts())
         
-        final_recommends.to_records()
+        # recommend_response = final_recommends.to_records()
+        # print(recommend_response)
         
         # serializer = RecParamSerializer(queryset, many=True)
-        return Respon
+        return Response(final_recommends.T)
         
             
 

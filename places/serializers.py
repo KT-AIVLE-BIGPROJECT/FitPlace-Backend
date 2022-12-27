@@ -16,3 +16,6 @@ class CongestionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Congestion
         fields = '__all__'
+
+
+# class RecommendationSerializer()
