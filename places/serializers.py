@@ -2,9 +2,9 @@ from rest_framework import serializers
 from .models import *
 
 
-class PlacesSerializer(serializers.ModelSerializer):
+class PlaceSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Places
+        model = Place
         fields = '__all__'
 
 

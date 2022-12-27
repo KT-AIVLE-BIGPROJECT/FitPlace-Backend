@@ -10,24 +10,24 @@ from .serializers import *
 import random
 
 # # [ 전체 장소 불러오기 + 카테고리 지정 ]
-# class PlacesViewSet(APIView):
+# class PlaceViewSet(APIView):
 #     def get(self, request, format=None):
-#         queryset = Places.objects.all()
-#         serializer = PlacesSerializer(queryset, many=True)
+#         queryset = Place.objects.all()
+#         serializer = PlaceSerializer(queryset, many=True)
 #         print(len(queryset))
 #         return Response(serializer.data)
-class PlacesViewSet(generics.ListAPIView):
-    queryset = Places.objects.all()#.order_by('-place_rating')
-    serializer_class = PlacesSerializer
+class PlaceViewSet(generics.ListAPIView):
+    queryset = Place.objects.all()#.order_by('-rating')
+    serializer_class = PlaceSerializer
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['place_category', 'id']
+    filterset_fields = ['search_category']
 
-class PlacesTop100ViewSet(APIView):
+class PlaceTop100ViewSet(APIView):
     def get(self, request, format=None):
-        places = list(Places.objects.order_by('-review_blog_count','-review_count')[:100])
+        places = list(Place.objects.order_by('-review_blog_count','-review_visitor_count')[:100])
         queryset = random.sample(places,7)
         print(queryset)
-        serializer = PlacesSerializer(queryset, many=True)
+        serializer = PlaceSerializer(queryset, many=True)
         print(len(queryset))
         return Response(serializer.data)
 
