@@ -26,7 +26,7 @@ urlpatterns = [
     path('users/', include('users.urls')),
     path('', include('posts.urls')),# posts.urls에 router로 이미 posts/경로 설정이 되어 있어서 여기에는 posts/ 적어주지 않음
     url('places/', views.PlaceViewSet.as_view()),
-    url('recommendations/', views.RecommendationAPI.as_view()),
+    path('recommendations/', views.RecommendationAPI.as_view()),
     url('places100/', views.PlaceTop100ViewSet.as_view()),
     url('congestion/', views.CongestionViewSet.as_view()),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
