@@ -77,7 +77,7 @@ class RecommendationAPI(APIView):
         # print(recommend_response)
         
         # serializer = RecParamSerializer(queryset, many=True)
-        return Response(final_recommends.T)
+        return Response(final_recommends)
         
             
 
