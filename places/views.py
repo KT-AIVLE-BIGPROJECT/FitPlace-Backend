@@ -50,7 +50,7 @@ class RecommendationAPI(APIView):
             return Response(0)
         else:
             main_category = body["main_category"]
-            # mid_category = body["mid_category"]
+            # sub_category = body["sub_category"]
             filter_rating = body["filter_rating"]
             filter_review = body["filter_review"]
             filter_region = body["filter_region"]
@@ -118,6 +118,12 @@ class RecommendationAPI(APIView):
                                                         (final_recommends['search_category']=="거리")]
             else:
                 pass
+
+            #### 중분류 카테고리(키워드) 선택
+            # if sub_category == "":
+            #     pass
+            # elif:
+            #     final_recommends_response = final_recommends_response.loc[final_recommends_response['search_category'] == sub_category]
             
             #### 평점 필터링
             if filter_rating == 1: # 높은 순
