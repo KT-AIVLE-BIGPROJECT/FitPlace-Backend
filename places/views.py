@@ -12,6 +12,12 @@ import random
 import json
 import pandas as pd
 from sklearn.metrics.pairwise import cosine_similarity
+import time
+from bs4 import BeautifulSoup # pip install beautifulsoup4
+from selenium import webdriver # pip install selenium
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
+
 
 # # [ 전체 장소 불러오기 + 카테고리 지정 ]
 # class PlaceViewSet(APIView):
@@ -35,7 +41,8 @@ class PlaceTop100ViewSet(APIView):
         print(len(queryset))
         return Response(serializer.data)
 
-# [ 사용자 별 맞춤 장소 불러오기 ]
+
+#### [ 사용자 별 맞춤 장소 불러오기 ]
 # - 중분류 카테고리별, 지역구별 필터링
 # - 평점순, 리뷰순 정렬
 class RecommendationAPI(APIView):
@@ -144,21 +151,6 @@ class RecommendationAPI(APIView):
             print(main_category)
             print(final_recommends_response)
             return Response(final_recommends_response)
-            
-
-
-class CongestionViewSet(APIView):
-    def get(self, request, format=None):
-        area_nm = request.GET.get('area_nm')
-        hour = datetime.today().hour
-        queryset = Congestion.objects.filter(area_nm=area_nm,
-                                             now__range=[datetime.today() - timedelta(days=7),
-                                                         datetime.today() - timedelta(days=1)],
-                                             now__hour=hour,
-                                             ).order_by('-now')
-        serializer = CongestionSerializer(queryset, many=True)
-        print(len(queryset))
-        return Response(serializer.data)
 
 
 # [ 메인화면 연령대, 성별, MBTI 별 상위 100개 추천장소 불러오기 ]
@@ -265,4 +257,145 @@ class MainTopRecommendAPI(APIView):
         print(main_category)
         print(final_recommends_response)
         final_recommends_response = final_recommends_response[:100]
-        return Response(final_recommends_response)
+        return Response(final_recommends_response)       
+
+
+#### 혼잡도 데이터 불러오기
+class CongestionViewSet(APIView):
+    def get(self, request, format=None):
+        area_nm = request.GET.get('area_nm')
+        hour = datetime.today().hour
+        queryset = Congestion.objects.filter(area_nm=area_nm,
+                                             now__range=[datetime.today() - timedelta(days=7),
+                                                         datetime.today() - timedelta(days=1)],
+                                             now__hour=hour,
+                                             ).order_by('-now')
+        serializer = CongestionSerializer(queryset, many=True)
+        print(len(queryset))
+        return Response(serializer.data)
+    
+    
+# 혼잡도 예측 API
+# [ 메인화면 연령대, 성별, MBTI 별 상위 100개 추천장소 불러오기 ]
+class PredictCongestion(APIView):
+    def post(self, request):
+        
+        # 사용자 입력정보 데이터 받아오기
+        body = json.loads(request.body)
+        now_congestion = body["now_congestion"]
+        
+        now_congestion = pd.DataFrame([now_congestion])
+        print(f"현재 혼잡도")
+        print(now_congestion)
+        
+        # 모델 불러오기
+
+        # 예측
+        
+
+        print("혼잡도 예측 결과입니다.")
+        # print(predict_result)
+        # return Response(predict_result)
+        return Response(0)
+    
+
+# 네이버 블로그 리뷰 API
+class BlogReviewAPI(APIView):
+    def post(self, request):
+        # 사용자 입력정보 데이터 받아오기
+        body = json.loads(request.body)
+        place_code = body["place_code"]
+        print(f"장소 코드 : {body}")
+        
+        options = webdriver.ChromeOptions()
+        # 창 숨기는 옵션 추가
+        options.add_argument("headless")
+
+        # driver 실행
+        driver_url = '/static/chromedriver.exe'
+        driver = webdriver.Chrome(driver_url, options=options)
+        # driver = webdriver.Chrome()
+        driver.implicitly_wait(5)
+
+        blog_reviews = f"https://pcmap.place.naver.com/restaurant/{place_code}/review/ugc"
+        # blog_reviews = f"https://map.naver.com/restaurant/{place_code}/review/ugc"
+
+        driver.get(blog_reviews)
+
+        body = BeautifulSoup(driver.page_source, 'html.parser').body
+
+        # BLOG_REVIEW_NUM = body.select_one('em.place_section_count')
+        BLOG_REVIEW_NUM = 5 # 블로그 리뷰 5개씩만
+        # print(f"갖고올 블로그 리뷰 개수 : {BLOG_REVIEW_NUM}")
+            
+        # 리뷰 제목
+        #app-root > div > div > div > div:nth-child(7) > div:nth-child(3) > div > div.place_section_content > ul > li:nth-child(1) > a > div.kT8X8 > div.hPTBw > div > span
+        reviews_title = body.select('div.place_section_content > ul > li > a > div.kT8X8 > div.hPTBw > div > span')
+        # print("[리뷰 제목]")
+        # print(reviews_title)
+
+        # 리뷰 내용
+        #app-root > div > div > div > div:nth-child(7) > div:nth-child(3) > div > div.place_section_content > ul > li:nth-child(1) > a > div.kT8X8 > div.PRq7t > div
+        reviews_body = body.select('div.place_section_content > ul > li > a > div.kT8X8 > div.PRq7t > div')
+        # print("[리뷰 내용]")
+        # print(reviews_body)
+
+        # 리뷰 URL
+        #app-root > div > div > div > div:nth-child(7) > div:nth-child(3) > div > div.place_section_content > ul > li:nth-child(1) > a
+        reviews_url = []
+        temp = body.select('div.place_section_content > ul > li > a')
+        for r in temp:
+            temp2 = r.attrs['href']
+            reviews_url.append(temp2)
+        # print("[리뷰 URL]")
+        # print(reviews_url)
+        
+        # 리뷰 사진
+        #app-root > div > div > div > div:nth-child(6) > div:nth-child(3) > div > div.place_section_content > ul > li:nth-child(1) > a > div.sxpee > div > div > div > div:nth-child(1) > span > div
+        review_photos = []
+        temp = body.select('div.place_section_content > ul > li > a > div.sxpee > div > div > div > div:nth-child(1) > span > div')
+        for r in temp:
+            temp2 = r.attrs['style']
+            review_photos.append(temp2)
+        # print("[리뷰 사진]")
+        # print(review_photos)
+
+        driver.quit()
+
+        reviews_title2 = []
+        reviews_body2 = []
+        for r in reviews_title:
+            reviews_title2.append(r.text)
+        for r in reviews_body:
+            reviews_body2.append(r.text)
+
+        result = pd.DataFrame({
+            "title": reviews_title2,
+            "body": reviews_body2,
+            "url": reviews_url,
+            "photo": review_photos,
+        })
+        
+        photo_url = result['photo'].str.split("url")
+        result['photo_url'] = photo_url.str.get(1)
+        result['photo_url'] = result['photo_url'].str.replace("'", "")
+        result['photo_url'] = result['photo_url'].str.replace('"', "")
+        result['photo_url'] = result['photo_url'].str.replace("(", "")
+        result['photo_url'] = result['photo_url'].str.replace(")", "")
+        result['photo_url'] = result['photo_url'].str.replace(";", "")
+        result = result.drop(columns=['photo'])
+        print(result)
+        
+        # 블로그 리뷰 몇 개 갖고올 지 정한 대로 (더보기 안누르게 해놔서 일단 5개)
+        if len(reviews_title2) > BLOG_REVIEW_NUM:
+            result_response = result[:BLOG_REVIEW_NUM]
+        else:
+            result_response = result
+            
+        # result_response = result_response.to_records()
+        # print("************************************")
+        # print(result_response)
+            
+        # print("========================================================",type(result_response))
+        
+        return Response(result_response)
