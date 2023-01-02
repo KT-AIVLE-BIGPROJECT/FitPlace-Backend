@@ -1,2 +1,10 @@
 db.sqlite3
 secrets.json
+__pycache__/*
+fitplace/__pycache__/
+places/__pycache__/
+places/migrations/__pycache__/
+posts/__pycache__/
+posts/migrations/__pycache__/
+users/__pycache__/
+users/migrations/__pycache__

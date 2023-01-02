@@ -303,6 +303,9 @@ class PredictCongestion(APIView):
 
 # 네이버 블로그 리뷰 API
 class BlogReviewAPI(APIView):
+    # def get(self, request):
+    #     import os
+    #     return Response([os.getcwd(), os.listdir()])
     def post(self, request):
         # 사용자 입력정보 데이터 받아오기
         body = json.loads(request.body)
@@ -314,7 +317,8 @@ class BlogReviewAPI(APIView):
         options.add_argument("headless")
 
         # driver 실행
-        driver_url = '/static/chromedriver.exe'
+        driver_url = 'places/static/chromedriver.exe'
+        # driver_url = 'chromedriver.exe'
         driver = webdriver.Chrome(driver_url, options=options)
         # driver = webdriver.Chrome()
         driver.implicitly_wait(5)
@@ -415,8 +419,8 @@ class TestAPI(APIView):
         place = "가로수길"
         
         
-        # csv_name = f"conjest_model/seoul_50.csv"
-        csv_name = "seoul_result.csv"
+        csv_name = f"conjest_model/seoul_test.csv"
+        # csv_name = "seoul_result.csv"
         model_name1 = f"conjest_model/models_1hr/{gu}_{place}.h5"
         model_name2 = f"conjest_model/models_2hr/{gu}_{place}.h5"
         # model_name = f"gangnam_가로수길.h5"
@@ -454,8 +458,15 @@ class TestAPI(APIView):
                 result[r] = "보통"
             else:
                 result[r] = "여유"
+                
+        # 24시간 이전 데이터 전송
+        index = []
+        for i in range(24):
+            index.append(-1-i*6)
+        result["last_24"] = data[index].reshape(-1)
+        
         return Response(result)
-    
+
 class TwitterAPI(APIView):
     def post(self, request):
         BEARER_TOKEN = settings.TWITTER_BEARER_TOKEN
