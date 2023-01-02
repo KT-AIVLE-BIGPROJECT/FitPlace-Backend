@@ -266,3 +266,57 @@ class MainTopRecommendAPI(APIView):
         print(final_recommends_response)
         final_recommends_response = final_recommends_response[:100]
         return Response(final_recommends_response)
+    
+    
+class TestAPI(APIView):
+    def get(self, request):
+        import pandas as pd
+        import numpy as np
+        from tensorflow import keras
+        result = {}
+
+        # 구, 50장소 이름 받아오는 것 구현해야함
+        gu = "gangnam"
+        place = "가로수길"
+        
+        
+        # csv_name = f"conjest_model/seoul_50.csv"
+        csv_name = "seoul_result.csv"
+        model_name1 = f"conjest_model/models_1hr/{gu}_{place}.h5"
+        model_name2 = f"conjest_model/models_2hr/{gu}_{place}.h5"
+        # model_name = f"gangnam_가로수길.h5"
+        
+        ## 예측
+        df = pd.read_csv(csv_name)
+        model1 = keras.models.load_model(model_name1)
+        model2 = keras.models.load_model(model_name2)
+
+        condition = df["AREA_NM"] == place
+        data = df.loc[condition][["AREA_PPLTN_MIN"]].to_numpy()
+        
+        x_test_1hour = data[-6:].reshape(1,-1,1)
+        x_test_2hour = data[-12:].reshape(1,-1,1)
+        
+        y_test_1hour = int(model1.predict(x_test_1hour))
+        y_test_2hour = int(model2.predict(x_test_2hour))
+        
+        result = {
+            "h_01": y_test_1hour,
+            "h_02": y_test_2hour,
+            "y_test_1hour" : y_test_1hour,
+            "y_test_2hour" : y_test_2hour,
+        }
+        
+        ## 혼잡도 분류
+        df = pd.read_csv("conjest_model/congest_standard.csv")
+        condition = df["AREA_NM"] == place
+        standard1 = df.loc[condition].to_numpy()[0][-1]
+        standard2 = df.loc[condition].to_numpy()[0][-2]
+        for r in ["h_01","h_02"]:
+            if result[r] >= standard1:
+                result[r] = "혼잡"
+            elif result[r] >= standard2:
+                result[r] = "보통"
+            else:
+                result[r] = "여유"
+        return Response(result)

@@ -30,4 +30,5 @@ urlpatterns = [
     path('maintoprecommend/', views.MainTopRecommendAPI.as_view()),
     url('places100/', views.PlaceTop100ViewSet.as_view()),
     url('congestion/', views.CongestionViewSet.as_view()),
+    url("test/", views.TestAPI.as_view()),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
