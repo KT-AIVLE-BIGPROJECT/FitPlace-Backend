@@ -33,4 +33,5 @@ urlpatterns = [
     url('congestion/', views.CongestionViewSet.as_view()),
     url('predictcongestion/', views.PredictCongestion.as_view()),
     url("test/", views.TestAPI.as_view()),
+    path("twitter/", views.TwitterAPI.as_view()),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

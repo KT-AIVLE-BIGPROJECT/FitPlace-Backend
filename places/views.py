@@ -4,6 +4,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
 from django.views import View
+from django.conf import settings
 
 from .models import *
 from datetime import timedelta, datetime
@@ -11,6 +12,7 @@ from .serializers import *
 import random
 import json
 import pandas as pd
+import requests
 from sklearn.metrics.pairwise import cosine_similarity
 import time
 from bs4 import BeautifulSoup # pip install beautifulsoup4
@@ -305,7 +307,7 @@ class BlogReviewAPI(APIView):
         # 사용자 입력정보 데이터 받아오기
         body = json.loads(request.body)
         place_code = body["place_code"]
-        print(f"장소 코드 : {body}")
+        print(f"장소 코드 : {place_code}")
         
         options = webdriver.ChromeOptions()
         # 창 숨기는 옵션 추가
@@ -453,3 +455,22 @@ class TestAPI(APIView):
             else:
                 result[r] = "여유"
         return Response(result)
+    
+class TwitterAPI(APIView):
+    def post(self, request):
+        BEARER_TOKEN = settings.TWITTER_BEARER_TOKEN
+        
+        # 쿼리 받아오기
+        body = json.loads(request.body)
+        query = body["query"]
+        print(f"쿼리 : {query}")
+
+        response = requests.get(
+            f"https://api.twitter.com/2/tweets/search/recent?query={query}&tweet.fields=public_metrics,attachments&expansions=author_id,attachments.media_keys&media.fields=preview_image_url,type,url,alt_text&user.fields=name,username,profile_image_url,url",
+            headers={ 
+                     "Authorization": f"Bearer {BEARER_TOKEN}"
+                     }
+            )
+        # print(response.json())
+        
+        return Response(response.json())
