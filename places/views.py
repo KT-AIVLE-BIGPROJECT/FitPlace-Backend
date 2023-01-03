@@ -263,42 +263,42 @@ class MainTopRecommendAPI(APIView):
 
 
 #### 혼잡도 데이터 불러오기
-class CongestionViewSet(APIView):
-    def get(self, request, format=None):
-        area_nm = request.GET.get('area_nm')
-        hour = datetime.today().hour
-        queryset = Congestion.objects.filter(area_nm=area_nm,
-                                             now__range=[datetime.today() - timedelta(days=7),
-                                                         datetime.today() - timedelta(days=1)],
-                                             now__hour=hour,
-                                             ).order_by('-now')
-        serializer = CongestionSerializer(queryset, many=True)
-        print(len(queryset))
-        return Response(serializer.data)
+# class CongestionViewSet(APIView):
+#     def get(self, request, format=None):
+#         area_nm = request.GET.get('area_nm')
+#         hour = datetime.today().hour
+#         queryset = Congestion.objects.filter(area_nm=area_nm,
+#                                              now__range=[datetime.today() - timedelta(days=7),
+#                                                          datetime.today() - timedelta(days=1)],
+#                                              now__hour=hour,
+#                                              ).order_by('-now')
+#         serializer = CongestionSerializer(queryset, many=True)
+#         print(len(queryset))
+#         return Response(serializer.data)
     
     
 # 혼잡도 예측 API
 # [ 메인화면 연령대, 성별, MBTI 별 상위 100개 추천장소 불러오기 ]
-class PredictCongestion(APIView):
-    def post(self, request):
+# class PredictCongestion(APIView):
+#     def post(self, request):
         
-        # 사용자 입력정보 데이터 받아오기
-        body = json.loads(request.body)
-        now_congestion = body["now_congestion"]
+#         # 사용자 입력정보 데이터 받아오기
+#         body = json.loads(request.body)
+#         now_congestion = body["now_congestion"]
         
-        now_congestion = pd.DataFrame([now_congestion])
-        print(f"현재 혼잡도")
-        print(now_congestion)
+#         now_congestion = pd.DataFrame([now_congestion])
+#         print(f"현재 혼잡도")
+#         print(now_congestion)
         
-        # 모델 불러오기
+#         # 모델 불러오기
 
-        # 예측
+#         # 예측
         
 
-        print("혼잡도 예측 결과입니다.")
-        # print(predict_result)
-        # return Response(predict_result)
-        return Response(0)
+#         print("혼잡도 예측 결과입니다.")
+#         # print(predict_result)
+#         # return Response(predict_result)
+#         return Response(0)
     
 
 # 네이버 블로그 리뷰 API
@@ -407,18 +407,25 @@ class BlogReviewAPI(APIView):
         return Response(result_response)
 
 
-class TestAPI(APIView):
+class ConjestionAPI(APIView):
     def get(self, request):
         import pandas as pd
         import numpy as np
         from tensorflow import keras
         result = {}
-
+        gus = {"강남구":"gangnam",
+               "구로구":"guro",
+               "종로구":"jongro",
+               "마포구":"mapo",
+               "용산구":"yongsan"}
         # 구, 50장소 이름 받아오는 것 구현해야함
-        gu = "gangnam"
-        place = "가로수길"
-        
-        
+        # gu = "gangnam"
+        # place = "가로수길"
+        gu = request.GET.get("gu")
+        place = request.GET.get("nearestHot")
+        gu = gus[gu]
+        # print(f"place_TEST!!! : {place}")
+        # print(f"gu_TEST!!! : {gu}")
         csv_name = f"conjest_model/seoul_test.csv"
         # csv_name = "seoul_result.csv"
         model_name1 = f"conjest_model/models_1hr/{gu}_{place}.h5"

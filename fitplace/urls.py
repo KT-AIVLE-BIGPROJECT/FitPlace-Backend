@@ -30,8 +30,8 @@ urlpatterns = [
     path('maintoprecommend/', views.MainTopRecommendAPI.as_view()),
     path('blogreviews/', views.BlogReviewAPI.as_view()),
     url('places100/', views.PlaceTop100ViewSet.as_view()),
-    url('congestion/', views.CongestionViewSet.as_view()),
-    url('predictcongestion/', views.PredictCongestion.as_view()),
-    url("test/", views.TestAPI.as_view()),
-    path("twitter/", views.TwitterAPI.as_view()),
+    # url('congestion/', views.CongestionViewSet.as_view()),
+    # url('predictcongestion/', views.PredictCongestion.as_view()),
+    url("conjest/", views.ConjestionAPI.as_view()),
+    # path("twitter/", views.TwitterAPI.as_view()),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
