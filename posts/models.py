@@ -21,3 +21,4 @@ class Comment(models.Model):
     profile = models.ForeignKey(Profile, on_delete=models.CASCADE)
     post = models.ForeignKey(Post, related_name='comments', on_delete=models.CASCADE)
     text = models.TextField()
+    # published_date = models.DateTimeField(default=timezone.now)
