@@ -8,7 +8,7 @@ from .serializers import PostSerializer, PostCreateSerializer, CommentSerializer
 
 ### [ 게시글 ViewSet ]
 class PostViewSet(viewsets.ModelViewSet):
-    queryset = Post.objects.all()#.order_by('-published_date')
+    queryset = Post.objects.all().order_by('-published_date')
     permission_classes = [CustomReadOnly]
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['author', 'published_date']

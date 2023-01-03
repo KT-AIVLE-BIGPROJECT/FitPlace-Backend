@@ -17,8 +17,8 @@ from sklearn.metrics.pairwise import cosine_similarity
 import time
 from bs4 import BeautifulSoup # pip install beautifulsoup4
 from selenium import webdriver # pip install selenium
-from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
+# from selenium.webdriver.common.by import By
+# from selenium.webdriver.common.keys import Keys
 
 
 # # [ 전체 장소 불러오기 + 카테고리 지정 ]
