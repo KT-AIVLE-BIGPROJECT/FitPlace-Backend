@@ -139,7 +139,7 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS':
         'rest_framework.pagination.PageNumberPagination',
         'PAGE_SIZE':
-        10, # 한 페이지에 불러올 개수 지정
+        100, # 한 페이지에 불러올 개수 지정
 }
 
 # Internationalization
