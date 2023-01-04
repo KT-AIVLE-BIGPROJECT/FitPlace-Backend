@@ -12,6 +12,8 @@ from .serializers import *
 import random
 import json
 import pandas as pd
+import numpy as np
+from tensorflow import keras
 import requests
 from sklearn.metrics.pairwise import cosine_similarity
 import time
@@ -278,7 +280,6 @@ class MainTopRecommendAPI(APIView):
     
     
 # 혼잡도 예측 API
-# [ 메인화면 연령대, 성별, MBTI 별 상위 100개 추천장소 불러오기 ]
 # class PredictCongestion(APIView):
 #     def post(self, request):
         
@@ -409,9 +410,6 @@ class BlogReviewAPI(APIView):
 
 class ConjestionAPI(APIView):
     def get(self, request):
-        import pandas as pd
-        import numpy as np
-        from tensorflow import keras
         result = {}
         gus = {"강남구":"gangnam",
                "구로구":"guro",
@@ -424,8 +422,8 @@ class ConjestionAPI(APIView):
         gu = request.GET.get("gu")
         place = request.GET.get("nearestHot")
         gu = gus[gu]
-        # print(f"place_TEST!!! : {place}")
-        # print(f"gu_TEST!!! : {gu}")
+        print(f"가장 가까운 핫플레이스 : {place}")
+        print(f"지역구 : {gu}")
         csv_name = f"conjest_model/seoul_test.csv"
         # csv_name = "seoul_result.csv"
         model_name1 = f"conjest_model/models_1hr/{gu}_{place}.h5"
@@ -439,12 +437,18 @@ class ConjestionAPI(APIView):
 
         condition = df["AREA_NM"] == place
         data = df.loc[condition][["AREA_PPLTN_MIN"]].to_numpy()
+        print("해당 핫플레이스의 혼잡도 데이터입니다.")
+        print(data)
         
         x_test_1hour = data[-6:].reshape(1,-1,1)
         x_test_2hour = data[-12:].reshape(1,-1,1)
+        print("1시간 뒤 예측용 입력값 : ", x_test_1hour)
+        print("2시간 뒤 예측용 입력값 : ", x_test_2hour)
         
         y_test_1hour = int(model1.predict(x_test_1hour))
         y_test_2hour = int(model2.predict(x_test_2hour))
+        print("1시간 뒤 예측값 : ", y_test_1hour)
+        print("2시간 뒤 예측값 : ", y_test_2hour)
         
         result = {
             "h_01": y_test_1hour,
@@ -452,6 +456,7 @@ class ConjestionAPI(APIView):
             "y_test_1hour" : y_test_1hour,
             "y_test_2hour" : y_test_2hour,
         }
+        print("RESULT : ", result)
         
         ## 혼잡도 분류
         df = pd.read_csv("conjest_model/congest_standard.csv")
@@ -465,12 +470,14 @@ class ConjestionAPI(APIView):
                 result[r] = "보통"
             else:
                 result[r] = "여유"
+        print("혼잡도 분류 결과 : ", result)
                 
         # 24시간 이전 데이터 전송
         index = []
         for i in range(24):
             index.append(-1-i*6)
         result["last_24"] = data[index].reshape(-1)
+        print("최종 RESULT : ", result)
         
         return Response(result)
 
@@ -481,7 +488,7 @@ class TwitterAPI(APIView):
         # 쿼리 받아오기
         body = json.loads(request.body)
         query = body["query"]
-        print(f"쿼리 : {query}")
+        # print(f"쿼리 : {query}")
 
         response = requests.get(
             f"https://api.twitter.com/2/tweets/search/recent?query={query}&tweet.fields=public_metrics,attachments&expansions=author_id,attachments.media_keys&media.fields=preview_image_url,type,url,alt_text&user.fields=name,username,profile_image_url,url",

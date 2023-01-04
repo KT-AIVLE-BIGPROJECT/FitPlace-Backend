@@ -9,9 +9,9 @@ django.setup()
 from places.models import *  # django.setup() 이후에 임포트해야 오류가 나지 않음
 
 # PLACE_PATH = 'total.csv'
-PLACE_PATH = 'final_DBplaces_clean.csv'
-RECOMMEND_PARAMS_PATH = 'final_DBrecommend_params.csv'
-SEOUL_CONGESTION = 'seoul_result.csv'
+PLACE_PATH = 'final_DBplaces_clean.csv' # 최종 장소 데이터
+RECOMMEND_PARAMS_PATH = 'final_DBrecommend_params.csv' # 최종 장소 데이터들의 추천용 파라미터
+SEOUL_CONGESTION = 'seoul_result.csv' # 혼잡도 데이터
 
 # 전체 장소 데이터 DB 추가 함수
 def insertPlace():
